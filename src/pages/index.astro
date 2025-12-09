@@ -88,6 +88,8 @@ const publishedArticles = ARTICLES
 				display: flex;
 				flex-direction: column;
 				height: 100%;
+				text-decoration: none;
+				color: inherit;
 			}
 
 			.article-card:hover {
@@ -223,7 +225,8 @@ const publishedArticles = ARTICLES
 			<div class="articles-grid" id="articles-grid">
 				{
 					publishedArticles.map((article) => (
-						<article
+						<a
+							href={`/article/${article.id}`}
 							class="article-card"
 							data-category={article.category.toLowerCase()}
 						>
@@ -236,7 +239,7 @@ const publishedArticles = ARTICLES
 									<FormattedDate date={article.pubDate} />
 								</time>
 							</div>
-						</article>
+						</a>
 					))
 				}
 			</div>
