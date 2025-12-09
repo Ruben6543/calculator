@@ -1,0 +1,179 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
+import { ARTICLES } from '../../data/articles';
+import { SITE_TITLE } from '../../consts';
+
+export function getStaticPaths() {
+  return ARTICLES.filter((article) => article.status === 'published').map(
+    (article) => ({
+      params: { id: article.id },
+      props: { article },
+    })
+  );
+}
+
+interface Props {
+  article: typeof ARTICLES[0];
+}
+
+const { article } = Astro.props;
+
+if (!article) {
+  return Astro.redirect('/404');
+}
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title={`${article.title} - ${SITE_TITLE}`} description={article.excerpt} />
+    <style>
+      .article-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+      }
+
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.2s ease;
+      }
+
+      .back-link:hover {
+        color: var(--accent-dark);
+        transform: translateX(-4px);
+      }
+
+      .back-link svg {
+        width: 20px;
+        height: 20px;
+      }
+
+      .article-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid rgb(var(--gray-light));
+      }
+
+      .article-category {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background: rgb(var(--gray-light));
+        color: rgb(var(--gray-dark));
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 1rem;
+      }
+
+      .article-title {
+        margin: 0 0 1rem 0;
+        color: rgb(var(--black));
+        font-size: 2.5rem;
+        line-height: 1.2;
+      }
+
+      .article-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+        color: rgb(var(--gray));
+        font-size: 0.95rem;
+      }
+
+      .article-author {
+        font-weight: 600;
+        color: rgb(var(--black));
+      }
+
+      .article-date {
+        color: rgb(var(--gray));
+      }
+
+      .article-content {
+        color: rgb(var(--gray-dark));
+        line-height: 1.8;
+        font-size: 1.1rem;
+      }
+
+      .article-content p {
+        margin-bottom: 1.5rem;
+      }
+
+      .article-content p:first-of-type {
+        font-size: 1.2rem;
+        color: rgb(var(--black));
+        font-weight: 500;
+        margin-top: 0;
+      }
+
+      @media (max-width: 640px) {
+        .article-container {
+          padding: 1rem;
+        }
+
+        .article-title {
+          font-size: 2rem;
+        }
+
+        .article-meta {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <Header />
+    <main class="article-container">
+      <a href="/" class="back-link" aria-label="Back to homepage">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+        Back to Home
+      </a>
+
+      <article>
+        <header class="article-header">
+          <span class="article-category">{article.category}</span>
+          <h1 class="article-title">{article.title}</h1>
+          <div class="article-meta">
+            <span class="article-author">By {article.author}</span>
+            <time class="article-date">
+              <FormattedDate date={article.pubDate} />
+            </time>
+          </div>
+        </header>
+
+        <div class="article-content">
+          {
+            article.content.split('\n\n').map((paragraph) => (
+              <p>{paragraph.trim()}</p>
+            ))
+          }
+        </div>
+      </article>
+    </main>
+    <Footer />
+  </body>
+</html>
+
